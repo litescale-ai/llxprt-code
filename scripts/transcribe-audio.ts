@@ -6,6 +6,7 @@
  */
 
 import { spawn } from 'node:child_process';
+import { constants as fsConstants } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -15,6 +16,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..');
 const defaultProvider = 'gemini';
 const defaultModel = 'gemini-2.5-pro';
+const defaultLlxprtBin = './bundle/llxprt.js';
 
 interface CliOptions {
   inputPath: string;
@@ -60,7 +62,7 @@ Options:
   --output-dir <path>       Output bundle directory. Defaults to .llxprt-audio/<run-id>.
   --provider <name>         LLxprt provider. Defaults to ${defaultProvider}.
   --model <name>            Gemini multimodal or STT model. Defaults to ${defaultModel}.
-  --llxprt-bin <command>    LLxprt command. Defaults to npx.
+  --llxprt-bin <command>    LLxprt command. Defaults to ${defaultLlxprtBin}.
   --audio-bitrate <rate>    AAC/M4A bitrate. Defaults to 96k.
   --opus-bitrate <rate>     Opus bitrate. Defaults to 48k.
   --language <name>         Optional expected language.
@@ -92,7 +94,7 @@ function parseArgs(args: string[]): CliOptions {
   const options: Omit<CliOptions, 'inputPath'> = {
     provider: defaultProvider,
     model: defaultModel,
-    llxprtBin: 'npx',
+    llxprtBin: defaultLlxprtBin,
     audioBitrate: '96k',
     opusBitrate: '48k',
     skipGemini: false,
@@ -229,6 +231,22 @@ async function run(
 }
 
 async function requireCommand(command: string): Promise<void> {
+  if (command.includes('/') || command.includes('\\')) {
+    const commandPath = path.isAbsolute(command)
+      ? command
+      : path.resolve(repoRoot, command);
+    try {
+      await fs.access(commandPath, fsConstants.X_OK);
+      return;
+    } catch {
+      const hint =
+        command === defaultLlxprtBin
+          ? ' Run `npm run bundle` from the repo root first.'
+          : '';
+      throw new Error(`Command is not executable: ${commandPath}.${hint}`);
+    }
+  }
+
   const lookupCommand = process.platform === 'win32' ? 'where' : 'sh';
   const lookupArgs =
     process.platform === 'win32'

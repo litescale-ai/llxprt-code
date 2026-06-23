@@ -161,15 +161,16 @@ brew install ffmpeg
 nvm install 22
 nvm use 22
 
-git clone -b codex/gemini-audio-transcription-wrapper https://github.com/litescale-ai/llxprt-code.git
+git clone https://github.com/litescale-ai/llxprt-code.git
 cd llxprt-code
 npm ci
+npm run bundle
 ```
 
 Authenticate Gemini once:
 
 ```bash
-npx --yes @vybestack/llxprt-code
+./bundle/llxprt.js
 ```
 
 Inside LLxprt:
@@ -201,11 +202,13 @@ The output bundle includes:
 By default the wrapper calls:
 
 ```bash
-npx --yes @vybestack/llxprt-code --provider gemini --model gemini-2.5-pro --yolo --output-format text "Your prompt @/absolute/path/inside/workspace/gemini-input.wav"
+./bundle/llxprt.js --provider gemini --model gemini-2.5-pro --yolo --output-format text "Your prompt @/absolute/path/inside/workspace/gemini-input.wav"
 ```
 
 Use `--model` to target a different Gemini multimodal or STT model, and
 `--skip-gemini` to run only audio conversion and packaging for smoke tests.
+Use `--llxprt-bin npx` if you specifically want the wrapper to invoke
+`npx --yes @vybestack/llxprt-code` instead of the local bundle.
 
 For a reusable shell shortcut:
 
