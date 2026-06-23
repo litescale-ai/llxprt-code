@@ -147,6 +147,40 @@ llxprt --profile-load zai-glm5 "Refactor this function for better readability"
 llxprt "Generate unit tests for payment module" > tests/payment.test.js
 ```
 
+### Audio Transcription Wrapper
+
+LLxprt can be used as a Gemini multimodal transcription wrapper through the
+repo script. It accepts any local audio format supported by `ffmpeg`, stages a
+Gemini-friendly 16 kHz mono WAV inside the workspace for `@path` attachment
+handling, and exports web-ready compressed audio alongside the transcript.
+
+```bash
+npm run transcribe-audio -- ./meeting.m4a \
+  --context "Client discovery call" \
+  --language English \
+  --speakers "Ephraim, client team"
+```
+
+The output bundle includes:
+
+- `gemini-input.wav` - normalized PCM audio used for Gemini multimodal or STT
+  models
+- `audio.m4a` - AAC audio with `+faststart` for browser publishing and streaming
+- `audio.opus` - compact Opus audio for web playback
+- `prompt.md` - the exact diarized transcript prompt sent through LLxprt
+- `transcript.raw.txt` and `transcript.md` - raw and Markdown transcript output
+- `metadata.json` - probe data, model/provider, file paths, and generated audio
+  sizes
+
+By default the wrapper calls:
+
+```bash
+npx --yes @vybestack/llxprt-code --provider gemini --model gemini-2.5-pro --yolo --output-format text "Your prompt @/absolute/path/inside/workspace/gemini-input.wav"
+```
+
+Use `--model` to target a different Gemini multimodal or STT model, and
+`--skip-gemini` to run only audio conversion and packaging for smoke tests.
+
 ## Top Open Weight Models
 
 LLxprt Code works seamlessly with the best open-weight models:

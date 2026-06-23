@@ -35,6 +35,7 @@
     "start": "cross-env NODE_ENV=development node scripts/start.js",
     "start:a2a-server": "CODER_AGENT_PORT=41242 npm run start --workspace @vybestack/llxprt-code-a2a-server",
     "debug": "cross-env DEBUG=1 node --inspect-brk scripts/start.js",
+    "transcribe-audio": "tsx scripts/transcribe-audio.ts",
     "deflake": "node scripts/deflake.js",
     "deflake:test:integration:sandbox:none": "npm run deflake -- --command='npm run test:integration:sandbox:none'",
     "deflake:test:integration:sandbox:docker": "npm run deflake -- --command='npm run test:integration:sandbox:docker'",

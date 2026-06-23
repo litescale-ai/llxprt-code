@@ -17,6 +17,7 @@
 !.llxprt/LLXPRT.md
 
 # Note: .llxprt-clipboard/ is NOT in gitignore so LLxprt can access pasted images
+.llxprt-audio/
 
 # Dependency directory
 node_modules
