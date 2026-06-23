@@ -154,6 +154,32 @@ repo script. It accepts any local audio format supported by `ffmpeg`, stages a
 Gemini-friendly 16 kHz mono WAV inside the workspace for `@path` attachment
 handling, and exports web-ready compressed audio alongside the transcript.
 
+Install the fork branch on a new machine:
+
+```bash
+brew install ffmpeg
+nvm install 22
+nvm use 22
+
+git clone -b codex/gemini-audio-transcription-wrapper https://github.com/litescale-ai/llxprt-code.git
+cd llxprt-code
+npm ci
+```
+
+Authenticate Gemini once:
+
+```bash
+npx --yes @vybestack/llxprt-code
+```
+
+Inside LLxprt:
+
+```text
+/auth gemini enable
+/provider gemini
+/model gemini-2.5-pro
+```
+
 ```bash
 npm run transcribe-audio -- ./meeting.m4a \
   --context "Client discovery call" \
@@ -180,6 +206,13 @@ npx --yes @vybestack/llxprt-code --provider gemini --model gemini-2.5-pro --yolo
 
 Use `--model` to target a different Gemini multimodal or STT model, and
 `--skip-gemini` to run only audio conversion and packaging for smoke tests.
+
+For a reusable shell shortcut:
+
+```bash
+alias llxprt-transcribe='npm --prefix ~/path/to/llxprt-code run transcribe-audio --'
+llxprt-transcribe /path/to/audio.mp3 --context "Podcast episode"
+```
 
 ## Top Open Weight Models
 
